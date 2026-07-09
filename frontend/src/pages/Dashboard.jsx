@@ -196,10 +196,7 @@ export default function Dashboard() {
           transition={{ duration: 0.4, delay: 0.2 }}
           className="glass rounded-2xl p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-semibold">Evolução da Cotação</h3>
-            <span className="text-xs text-muted-foreground">Últimos 12 meses</span>
-          </div>
+          <h3 className="font-semibold mb-5">Evolução da Cotação</h3>
           <PriceChart data={history} />
         </motion.div>
 
