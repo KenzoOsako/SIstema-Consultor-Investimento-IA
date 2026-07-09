@@ -4,6 +4,7 @@ import Layout from '@/components/Layout';
 import Home from '@/pages/Home';
 import Dashboard from '@/pages/Dashboard';
 import Consultor from '@/pages/Consultor';
+import Alertas from '@/pages/Alertas';
 import Login from '@/pages/Login';
 
 function ProtectedRoute({ children }) {
@@ -36,6 +37,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Layout><Consultor /></Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/alertas"
+        element={
+          <ProtectedRoute>
+            <Layout><Alertas /></Layout>
           </ProtectedRoute>
         }
       />

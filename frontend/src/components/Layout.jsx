@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LineChart, Bot, Home, TrendingUp, LogOut } from "lucide-react";
+import { LineChart, Bot, Home, TrendingUp, LogOut, Bell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { to: "/", label: "Início", icon: Home },
   { to: "/dashboard", label: "Análise de Ativos", icon: LineChart },
   { to: "/consultor", label: "Consultor IA", icon: Bot },
+  { to: "/alertas", label: "Alertas", icon: Bell },
 ];
 
 export default function Layout({ children }) {
