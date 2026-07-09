@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+google-genai
+toml
+pandas
+yfinance
+python-jose[cryptography]
+bcrypt
+python-dotenv
+slowapi
+requests
+cachetools
