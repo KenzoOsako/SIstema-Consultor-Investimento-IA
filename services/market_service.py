@@ -59,3 +59,21 @@ def get_price_history(ticker: str, period: str = "1y") -> pd.DataFrame:
     except Exception as e:
         logger.error(f"Erro em get_price_history({ticker}): {e}")
         raise
+
+def get_current_price(ticker: str) -> float:
+    """
+    Retorna o preço atual de um ativo sem cache.
+    Usada pelo scheduler de alertas a cada 60 segundos.
+    Tenta o sufixo .SA (B3) primeiro; se falhar, tenta sem sufixo (ativos globais).
+    """
+    for symbol in [f"{ticker}.SA", ticker]:
+        try:
+            t = yf.Ticker(symbol)
+            info = t.info
+            price = info.get("currentPrice") or info.get("regularMarketPrice")
+            if price:
+                return float(price)
+        except Exception:
+            continue
+    raise Exception(f"Não foi possível obter o preço atual para {ticker}.")
+

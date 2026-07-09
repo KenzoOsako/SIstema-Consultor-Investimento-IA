@@ -4,12 +4,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import os
 from core.config import settings
 from core.rate_limiter import limiter
 from database.connection import init_db
-from routers import auth, users, market
+from routers import auth, users, market, alerts
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -24,6 +25,14 @@ def startup_event():
     init_db()
     logger.info("Banco de dados inicializado e App iniciado.")
 
+    # Inicia o scheduler de background jobs para monitoramento de alertas
+    from services.alert_service import orchestrator
+    scheduler = BackgroundScheduler(timezone="America/Sao_Paulo")
+    scheduler.add_job(orchestrator.run_price_check, "interval", seconds=60, id="price_check")
+    scheduler.add_job(orchestrator.run_alert_processor, "interval", seconds=30, id="alert_processor")
+    scheduler.start()
+    logger.info("Scheduler de alertas iniciado: price_check (60s), alert_processor (30s).")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,6 +44,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(market.router)
+app.include_router(alerts.router)
 
 @app.get("/api/health")
 def health_check():
