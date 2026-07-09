@@ -1,63 +1,63 @@
 # Radar B3 - Assessor Virtual e Dashboard de Investimentos
 
-O **Radar B3** é uma plataforma completa que une análise de dados do mercado financeiro (B3) e um Assessor de Investimentos movido por IA. Com esta aplicação, usuários podem entender o mercado de ações brasileiro, consultar dividendos, histórico de preços, e receber orientações via inteligência artificial com extrema resiliência e segurança.
+O Radar B3 é uma plataforma institucional que integra análise de dados do mercado financeiro da B3 com um Assessor de Investimentos baseado em Inteligência Artificial. A aplicação tem como objetivo principal prover aos usuários acesso rápido a cotações, histórico de dividendos e orientações financeiras geradas por inteligência artificial, garantindo alta disponibilidade e resiliência.
 
-Este repositório contém o sistema unificado em **Arquitetura Híbrida**: a **API (Backend)** construída em Python (FastAPI) gerencia a lógica de dados e Inteligência Artificial, e, simultaneamente, serve os arquivos estáticos compilados do **Frontend (React)**.
+Este repositório contém o sistema sob uma Arquitetura Híbrida: a API (Backend) desenvolvida em Python com o framework FastAPI gerencia a lógica de negócios e as requisições de Inteligência Artificial, e, simultaneamente, atua como servidor estático para os artefatos compilados do Frontend (desenvolvido em React).
 
-## 🚀 Tecnologias e Arquitetura
+## Tecnologias e Arquitetura
 
 ### Backend (Python/FastAPI)
-- **FastAPI & Uvicorn**: Framework web de alta performance rodando na porta `5173`.
-- **SQLite3**: Banco de dados relacional embarcado (dados protegidos via OWASP).
-- **Google GenAI (Gemini)**: Motor de Inteligência Artificial para o assessor financeiro.
-  - *Diferencial*: Conta com um sistema proprietário de **Fallback Híbrido** que reveza automaticamente entre múltiplas chaves de API e dezenas de modelos (ex: `gemini-3.5-flash`, `gemini-1.5-pro`) garantindo que falhas de cota (429) ou modelos inacessíveis (404) não interrompam a experiência do usuário.
-- **yfinance**: Extração de dados reais e atualizados (cotações, dividendos) do Yahoo Finance.
-- **Bcrypt & JWT (python-jose)**: Segurança, hash de senhas e autenticação de usuários baseada em sessões JWT seguras.
-- **SlowAPI**: Rate Limiting rigoroso para proteger os endpoints contra ataques DDoS e abusos na API da IA.
+- FastAPI e Uvicorn: Framework web assíncrono de alta performance operando na porta 5173.
+- SQLite3: Banco de dados relacional embarcado com configurações de segurança adequadas aos padrões OWASP.
+- Google GenAI (Gemini): Motor de Inteligência Artificial utilizado para as consultas do assessor financeiro.
+  - Diferencial Técnico: Implementação de um sistema de Fallback Híbrido proprietário que realiza o rodízio automático entre múltiplas chaves de API e diversos modelos (e.g., gemini-3.5-flash, gemini-1.5-pro). Esta abordagem garante tolerância a falhas relacionadas a limites de cota (HTTP 429) ou indisponibilidade de modelos específicos (HTTP 404).
+- yfinance: Biblioteca de extração de dados atualizados (cotações, dividendos) a partir do Yahoo Finance.
+- Bcrypt e JWT (python-jose): Módulos responsáveis pela segurança, hash de senhas e autenticação de usuários baseada em sessões JWT assinaladas.
+- SlowAPI: Middleware de Rate Limiting configurado para proteger os endpoints contra ataques de negação de serviço (DDoS) e mitigar abusos nas requisições à API de IA.
 
 ### Frontend (React/Vite)
-- **React.js & Vite**: SPA veloz com roteamento cliente (`react-router-dom`).
-- **Tailwind CSS**: Estilização profissional e interface responsiva.
-- **Integração Unificada**: O frontend não sofre com CORS, pois as chamadas `/api` são encaminhadas de forma nativa e relativa.
+- React.js e Vite: Single Page Application (SPA) com roteamento implementado via react-router-dom.
+- Tailwind CSS: Framework de estilização utilitária para construção de interfaces responsivas.
+- Integração Unificada: O roteamento relativo elimina a necessidade de configurações complexas de CORS, pois as chamadas à API são tratadas nativamente pelo mesmo servidor.
 
-## 🏗️ Estrutura de Diretórios (Nível de Produção)
+## Estrutura de Diretórios
 
-O projeto segue padrões profissionais Clean/Layered Architecture:
+O projeto obedece aos princípios de Clean Architecture e Layered Architecture, assegurando manutenibilidade e separação de responsabilidades:
 
-- `/frontend`: Todo o código fonte e assets do React. Os arquivos otimizados (`dist`) são servidos pela raiz do servidor Python.
-- `/core`: Configurações de sistema, segurança OWASP e Rate Limiters.
-- `/database`: Inicialização do SQLite e abstração de Repositories.
-- `/services`: Lógica de negócio isolada (`market_service.py` para B3 e `ai_service.py` para IA com fallback inteligente).
-- `/routers`: Controladores REST.
-- `main.py`: O coração do sistema. Gerencia o CORS, inicializa a aplicação FastAPI e orquestra a entrega da API (`/api/*`) e as rotas de Frontend (`/*`).
+- /frontend: Código-fonte e assets da aplicação React. Os artefatos otimizados de produção (/dist) são servidos a partir do diretório raiz do servidor Python.
+- /core: Módulos de configuração do sistema, definições de segurança e políticas de Rate Limiting.
+- /database: Inicialização do banco de dados SQLite e abstração das operações através do padrão Repository.
+- /services: Lógica de negócio estritamente isolada (market_service.py para integração de dados financeiros e ai_service.py para orquestração da inteligência artificial).
+- /routers: Controladores REST que expõem os endpoints da API.
+- main.py: Ponto de entrada da aplicação que inicializa o FastAPI, configura o CORS, acopla os roteadores da API e gerencia a entrega de conteúdo estático do Frontend.
 
-## ⚙️ Configuração e Execução
+## Configuração e Implantação
 
 ### 1. Instalação (Backend)
 
 ```bash
-# Crie e ative um ambiente virtual
+# Criação e ativação do ambiente virtual
 python -m venv venv
-.\venv\Scripts\activate # Windows
-# source venv/bin/activate # Linux/Mac
+.\venv\Scripts\activate # Ambiente Windows
+# source venv/bin/activate # Ambiente Linux/macOS
 
-# Instale as dependências da API
+# Instalação das dependências
 pip install -r requirements.txt
 ```
 
 ### 2. Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do projeto (nunca comite esse arquivo). Ele pode aceitar múltiplas chaves separadas por vírgula para aumentar o limite gratuito:
+Crie um arquivo `.env` na raiz do projeto (este arquivo não deve ser incluído no controle de versão). É suportada a definição de múltiplas chaves separadas por vírgula para balanceamento de carga:
 
 ```env
 GEMINI_API_KEY=chave_1,chave_2,chave_3
-SECRET_KEY=uma_chave_super_segura_de_32_bytes
+SECRET_KEY=sua_chave_criptografica_de_32_bytes
 DB_PATH=radar_b3.db
 ```
 
 ### 3. Build do Frontend
 
-Caso deseje atualizar a interface, é necessário compilar os assets do React:
+Caso seja necessário modificar e recompilar a interface do usuário, execute o processo de build do React:
 
 ```bash
 cd frontend
@@ -68,12 +68,12 @@ cd ..
 
 ### 4. Executando o Servidor Unificado
 
-Basta iniciar o FastAPI. Ele hospedará a API e o site simultaneamente:
+Inicie a aplicação FastAPI. O processo hospedará a API e servirá o Frontend simultaneamente:
 
 ```bash
 uvicorn main:app --port 5173
 ```
-Acesse `http://localhost:5173` no seu navegador. O painel e o chat de IA estarão online!
+Acesse `http://localhost:5173` no navegador de sua preferência para utilizar a plataforma completa.
 
 ---
-*Este projeto foi arquitetado focado em Segurança (Padrões OWASP), Escalabilidade e Resiliência de IA.*
+Projeto desenvolvido com ênfase em Segurança (Padrões OWASP), Escalabilidade e Resiliência em Integrações de Inteligência Artificial.
