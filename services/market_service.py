@@ -17,7 +17,6 @@ def get_ticker_info(ticker: str) -> dict:
             raise Exception(f"Ativo {ticker} não encontrado ou sem dados.")
 
         current_price = info.get("currentPrice") or info.get("regularMarketPrice", 0.0)
-        dy = info.get("dividendYield", 0.0) * 100 if info.get("dividendYield") else 0.0
 
         hist = t.history(period="1y")
         divs_ltm = 0.0
@@ -33,6 +32,13 @@ def get_ticker_info(ticker: str) -> dict:
                 dividends_df.columns = ["Date", "Value"]
                 dividends_df = dividends_df.sort_values("Date", ascending=False)
         
+        # Calculation for DY (Dividend Yield)
+        if divs_ltm > 0 and current_price > 0:
+            dy = (divs_ltm / current_price) * 100
+        else:
+            # yfinance dividendYield is typically already expressed as a percentage (e.g. 12.84 for 12.84%)
+            dy = info.get("dividendYield", 0.0)
+
         return {
             "ticker": ticker.upper(),
             "name": info.get("shortName", "N/A"),
