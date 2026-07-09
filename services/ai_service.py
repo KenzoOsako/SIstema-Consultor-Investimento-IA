@@ -80,22 +80,19 @@ def get_chat_response(messages: list) -> str:
             return response.text
         except Exception as e:
             error_msg = str(e)
-            if "429" in error_msg or "ResourceExhausted" in error_msg:
-                logger.warning(f"Chave {current_client_index} falhou com modelo {model_name} (429). Tentando próximo...")
-                
-                if user_defined_model:
-                    # Se o usuário fixou o modelo no .env, troca apenas a chave
-                    current_client_index = (current_client_index + 1) % len(gemini_clients)
-                    attempts += 1
-                else:
-                    # Revezamento completo: tenta todos os modelos na chave atual. Se todos falharem, troca a chave.
-                    current_model_index = (current_model_index + 1) % len(AVAILABLE_MODELS)
-                    if current_model_index == 0:
-                        current_client_index = (current_client_index + 1) % len(gemini_clients)
-                    attempts += 1
-                
-                last_error = e
+            logger.warning(f"Falha na chave {current_client_index} com modelo {model_name}. Erro: {error_msg}. Tentando próximo...")
+            
+            if user_defined_model:
+                # Se o usuário fixou o modelo no .env, troca apenas a chave
+                current_client_index = (current_client_index + 1) % len(gemini_clients)
+                attempts += 1
             else:
-                raise e
+                # Revezamento completo: tenta todos os modelos na chave atual. Se todos falharem, troca a chave.
+                current_model_index = (current_model_index + 1) % len(AVAILABLE_MODELS)
+                if current_model_index == 0:
+                    current_client_index = (current_client_index + 1) % len(gemini_clients)
+                attempts += 1
+            
+            last_error = e
     
     raise Exception(f"ResourceExhausted: Todas as combinações de modelos e chaves atingiram o limite. Último erro: {last_error}")
