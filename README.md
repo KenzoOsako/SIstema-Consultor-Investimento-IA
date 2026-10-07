@@ -55,6 +55,25 @@ SECRET_KEY=sua_chave_criptografica_de_32_bytes
 DB_PATH=radar_b3.db
 ```
 
+O banco SQLite é local e não acompanha o repositório. Na primeira inicialização,
+`database.connection.init_db()` cria o arquivo definido por `DB_PATH` e as tabelas
+vazias; não há contas, senhas, conversas ou favoritos pré-carregados. Cadastre uma
+nova conta pela interface. Use um caminho gravável cujo diretório já exista.
+
+Não versione bancos, seus arquivos de transação (`-wal`, `-shm`, `-journal`) ou
+cópias com dados reais. A remoção da versão atual não remove cópias de commits
+antigos. Esta alteração não apaga bancos de instalações existentes.
+
+Para verificar a inicialização limpa e os fluxos locais com dados sintéticos:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Os testes usam bancos temporários, não acessam o banco configurado da instalação
+e não chamam serviços externos. O teste HTTP requer `httpx` (já listado em
+`requirements.txt`).
+
 ### 3. Build do Frontend
 
 Caso seja necessário modificar e recompilar a interface do usuário, execute o processo de build do React:
