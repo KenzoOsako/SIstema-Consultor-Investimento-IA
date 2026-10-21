@@ -55,6 +55,15 @@ SECRET_KEY=sua_chave_criptografica_de_32_bytes
 DB_PATH=radar_b3.db
 ```
 
+`SECRET_KEY` é obrigatória: o servidor recusa a chave padrão antiga, valores
+curtos ou vazios. Gere uma chave própria com
+`python -c "import secrets; print(secrets.token_urlsafe(32))"` e guarde-a somente
+no ambiente autorizado. Alterar a chave invalida os tokens anteriores.
+
+A entrega estática restringe arquivos ao diretório `frontend/dist`, inclusive
+quando existem links simbólicos. Rotas da SPA continuam usando `index.html`;
+APIs desconhecidas e assets ausentes retornam 404.
+
 O banco SQLite é local e não acompanha o repositório. Na primeira inicialização,
 `database.connection.init_db()` cria o arquivo definido por `DB_PATH` e as tabelas
 vazias; não há contas, senhas, conversas ou favoritos pré-carregados. Cadastre uma
