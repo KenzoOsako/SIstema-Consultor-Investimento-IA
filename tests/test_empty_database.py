@@ -2,11 +2,15 @@
 
 import tempfile
 import unittest
+import os
 from pathlib import Path
 from unittest.mock import patch
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+# Credencial sintética exclusiva dos testes; instalações continuam exigindo .env.
+os.environ.setdefault("SECRET_KEY", "synthetic-test-only-secret-key-not-for-deployment")
 
 from core.config import settings
 from core.rate_limiter import limiter

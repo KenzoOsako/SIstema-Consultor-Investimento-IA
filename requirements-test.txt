@@ -1,0 +1,9 @@
+# API/database/configuration tests without market-data and AI integrations.
+fastapi==0.141.1
+pydantic==2.13.4
+pydantic-settings==2.15.0
+httpx==0.28.1
+python-jose==3.5.0
+bcrypt==4.0.1
+slowapi==0.1.10
+python-multipart==0.0.32
