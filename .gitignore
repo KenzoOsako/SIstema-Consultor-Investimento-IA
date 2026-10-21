@@ -12,6 +12,10 @@ env/
 .env
 .env.local
 
+# Installed frontend dependencies and generated builds
+frontend/node_modules/
+frontend/dist/
+
 # Local SQLite databases and transaction sidecars (may contain personal data)
 *.db
 *.db-journal
