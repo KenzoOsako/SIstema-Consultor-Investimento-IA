@@ -1,5 +1,7 @@
 """Regression checks for installations without a committed SQLite database."""
 
+import os
+import secrets
 import tempfile
 import unittest
 from pathlib import Path
@@ -8,11 +10,14 @@ from unittest.mock import patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from core.config import settings
-from core.rate_limiter import limiter
-from database.connection import get_connection, init_db
-from database.repositories import alert_repo, chat_repo, favorite_repo, user_repo
-from routers import auth, users
+# Configure only a synthetic in-memory test key before settings is imported.
+# Restore the caller's environment immediately; never use an operational key.
+with patch.dict(os.environ, {"SECRET_KEY": secrets.token_hex(32)}):
+    from core.config import settings
+    from core.rate_limiter import limiter
+    from database.connection import get_connection, init_db
+    from database.repositories import alert_repo, chat_repo, favorite_repo, user_repo
+    from routers import auth, users
 
 
 class EmptyDatabaseTests(unittest.TestCase):

@@ -51,9 +51,32 @@ Crie um arquivo `.env` na raiz do projeto (este arquivo não deve ser incluído 
 
 ```env
 GEMINI_API_KEY=chave_1,chave_2,chave_3
-SECRET_KEY=sua_chave_criptografica_de_32_bytes
+# Preencha com uma chave gerada localmente, nunca com um exemplo publicado.
+SECRET_KEY=
 DB_PATH=radar_b3.db
 ```
+
+Gere uma chave própria com pelo menos 32 bytes aleatórios (o comando produz
+64 caracteres hexadecimais):
+
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Configure o resultado em `SECRET_KEY` no ambiente do processo ou no `.env`
+local ignorado pelo Git. Não publique, compartilhe ou registre esse resultado.
+Não existe mais chave JWT padrão: uma chave ausente ou inválida impede a
+inicialização antes de a aplicação atender requisições.
+
+A validação exige pelo menos 32 caracteres e 8 caracteres distintos, recusa
+espaços nas extremidades, exemplos conhecidos e padrões curtos repetidos.
+Essas regras mínimas não provam entropia: use sempre um gerador criptográfico,
+como o comando acima, e uma chave diferente para cada ambiente.
+
+Ao aplicar esta versão em uma instalação existente, configure a nova chave
+antes de iniciar o processo. Trocar a chave invalida todos os JWTs emitidos
+com a anterior; os usuários precisarão fazer login novamente. A publicação
+do código não altera automaticamente a chave ou as sessões de um deploy.
 
 O banco SQLite é local e não acompanha o repositório. Na primeira inicialização,
 `database.connection.init_db()` cria o arquivo definido por `DB_PATH` e as tabelas
@@ -70,8 +93,9 @@ Para verificar a inicialização limpa e os fluxos locais com dados sintéticos:
 python -m unittest discover -s tests -v
 ```
 
-Os testes usam bancos temporários, não acessam o banco configurado da instalação
-e não chamam serviços externos. O teste HTTP requer `httpx` (já listado em
+Os testes usam chaves sintéticas geradas em memória e bancos temporários, não
+acessam o banco configurado da instalação e não chamam serviços externos.
+Os testes HTTP requerem `httpx` (já listado em
 `requirements.txt`).
 
 ### 3. Build do Frontend
