@@ -8,9 +8,12 @@ import unittest
 
 class SecretConfigurationTests(unittest.TestCase):
     def configured_process(self, secret):
-        env = {'PATH': os.environ.get('PATH', ''),
-               'PYTHONPATH': str(Path(__file__).resolve().parents[1]),
-               'PYTHONDONTWRITEBYTECODE': '1'}
+        env = os.environ.copy()
+        for name in list(env):
+            if name.casefold() == 'secret_key':
+                del env[name]
+        env['PYTHONPATH'] = str(Path(__file__).resolve().parents[1])
+        env['PYTHONDONTWRITEBYTECODE'] = '1'
         if secret is not None:
             env['SECRET_KEY'] = secret
         with tempfile.TemporaryDirectory() as directory:

@@ -51,14 +51,27 @@ Crie um arquivo `.env` na raiz do projeto (este arquivo não deve ser incluído 
 
 ```env
 GEMINI_API_KEY=chave_1,chave_2,chave_3
-SECRET_KEY=sua_chave_criptografica_de_32_bytes
+SECRET_KEY=
 DB_PATH=radar_b3.db
 ```
 
-`SECRET_KEY` é obrigatória: o servidor recusa a chave padrão antiga, valores
-curtos ou vazios. Gere uma chave própria com
-`python -c "import secrets; print(secrets.token_urlsafe(32))"` e guarde-a somente
-no ambiente autorizado. Alterar a chave invalida os tokens anteriores.
+`SECRET_KEY` é obrigatória e não possui padrão. Gere uma chave independente
+com pelo menos 32 bytes aleatórios:
+
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Configure o resultado no ambiente do processo ou no `.env` local ignorado
+pelo Git. Não publique, compartilhe ou registre a chave. A inicialização e
+atribuições posteriores recusam menos de 32 caracteres, menos de 8 caracteres
+distintos, espaços nas extremidades, exemplos conhecidos e padrões curtos
+repetidos. Essas regras mínimas não provam entropia: use sempre um gerador
+criptográfico e uma chave diferente por ambiente.
+
+Em instalações existentes, configure a chave válida antes de iniciar esta
+versão. Trocar a chave invalida os JWTs anteriores e exige novo login.
+Publicar código não altera automaticamente chaves ou sessões de um deploy.
 
 A entrega estática restringe arquivos ao diretório `frontend/dist`, inclusive
 quando existem links simbólicos. Rotas da SPA continuam usando `index.html`;
@@ -79,8 +92,8 @@ Para verificar a inicialização limpa e os fluxos locais com dados sintéticos:
 python -m unittest discover -s tests -v
 ```
 
-Os testes usam bancos temporários, não acessam o banco configurado da instalação
-e não chamam serviços externos. O teste HTTP requer `httpx` (já listado em
+Os testes usam chaves sintéticas em memória e bancos temporários, não acessam
+o banco configurado da instalação e não chamam serviços externos. O teste HTTP requer `httpx` (já listado em
 `requirements.txt`).
 
 ### 3. Build do Frontend
