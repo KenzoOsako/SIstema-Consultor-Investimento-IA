@@ -27,6 +27,9 @@ class FrontendBoundaryTests(unittest.TestCase):
         self.assertEqual(self.client.get('/').text, 'synthetic-spa')
         self.assertEqual(self.client.get('/dashboard/favorites').text, 'synthetic-spa')
         self.assertEqual(self.client.get('/assets/app.js').text, 'synthetic-asset')
+        response = self.client.head('/assets/app.js')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
 
     def test_encoded_traversal_and_windows_paths_are_rejected(self):
         for path in ['/%2e%2e/private.txt', '/assets/%2e%2e/%2e%2e/private.txt', '/..%5cprivate.txt', '/%00private.txt']:
@@ -34,6 +37,7 @@ class FrontendBoundaryTests(unittest.TestCase):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 404)
                 self.assertNotIn('outside-build-sentinel', response.text)
+                self.assertEqual(self.client.head(path).status_code, 404)
 
     def test_unknown_api_and_missing_asset_are_not_html_fallbacks(self):
         for path in ['/api', '/api/unknown', '/assets/missing.js']:
